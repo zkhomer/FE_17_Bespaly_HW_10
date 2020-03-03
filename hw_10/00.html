@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        function Form(el, data, okCallback, cancelCallback) {
+
+
+
+            let formState = {
+                name: "",
+                sername: '',
+                birthday: '',
+                married: ''
+            }
+
+            let formBody = document.createElement('div');
+            let okButton = document.createElement('button');
+            okButton.innerHTML = 'OK';
+            let cancelButton = document.createElement('button');
+            cancelButton.innerHTML = 'Cancel';
+
+            formBody.innerHTML = '<h1>тут будет форма после перервы</h1>'
+            if (typeof okCallback === 'function') {
+                formBody.appendChild(okButton);
+                okButton.onclick = (e) => {
+                    console.log(this)
+                    this.okCallback(e)
+                }
+            }
+
+            if (typeof cancelCallback === 'function') {
+                formBody.appendChild(cancelButton);
+                cancelButton.onclick = cancelCallback
+            }
+
+            // const validator = (currentState, keyName) => {
+            //     return currentState[keyName] === '' || currentState[keyName].length < 2
+            //         ? false
+            //         : true
+
+            // }
+            function oneItem(key, value) {
+                let me = this
+                const types = {
+                    string() {
+                        let input = document.createElement('input')
+                        input.value = value
+                        input.oninput = (event) => {
+                            data[key] = input.value;
+
+                        }
+                        if (typeof this.validators === 'function') {
+
+                        }
+                        return input;
+                    },
+                    boolean() {
+                        let input = document.createElement('input')
+                        input.type = 'checkbox'
+                        input.checked = value
+                        input.onchange = (event) => {
+                            data[key] = input.value;
+
+                        }
+                        return input;
+                    },
+                    number() {
+                        let input = types.string(value)
+                        input.type = 'number'
+                        input.onchange = (event) => {
+                            data[key] = +(input.value);
+
+                        }
+                        return input
+                    }
+                }
+                let label = document.createElement('label')
+                label.innerHTML = key
+
+
+                label.appendChild(types[typeof 'Object']())
+
+                return label
+            }
+            for (let [key, value] of Object.entries(data)) {
+                el.appendChild(oneItem(key, value))
+            } {
+                // for (let j in data) {
+                //     // let input = document.createElement("input")
+                //     // input.placeholder = j
+                //     // input.onchange = (event) => {
+                //     //     data[j] = input.value;
+                //     //     formState[event.target.placeholder] = input.value;
+                //     //     validator(formState, event.target.placeholder) ?
+                //     //         hard.innerHTML = '' :
+                //     //         hard.innerHTML = '<p style="color:red;">Не корректно заполнено поле, пожалуйста повторите</p>'
+
+                //     // }
+                //     oneItem(j, data[j])
+
+                //     formBody.appendChild(input)
+
+                //     console.log(data[j])
+                // }
+            }
+            var hard = document.createElement('h5')
+            formBody.appendChild(hard)
+            el.appendChild(formBody)
+
+
+            this.okCallback = okCallback
+            this.cancelCallback = cancelCallback
+
+this.data = data
+            this.validators = {
+
+            }
+
+
+        }
+
+        let test = document.createElement('div')
+        let form = new Form(test, {
+            name: 'Anakin',
+            surname: 'Skywalker',
+            married: true,
+            birthday: new Date((new Date).getTime() - 86400000 * 30 * 365)
+        }, () => console.log('ok'), () => console.log('cancel'))
+        form.okCallback = () => form.validators.surname = (value, key, data, input) => value.length > 2 &&
+            value[0].toUpperCase() == value[0] &&
+            !value.includes(' ') ? true : 'Wrong name'
+
+
+        console.log(form)
+        document.body.appendChild(test)
+    </script>
+</body>
+
+</html>
